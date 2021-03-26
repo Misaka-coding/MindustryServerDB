@@ -1,6 +1,7 @@
 package uwu.misaka.net;
 
 import uwu.misaka.sended.PlayerInfo;
+import uwu.misaka.sended.RatingInfo;
 
 import java.io.*;
 import java.net.Socket;
@@ -68,22 +69,36 @@ public class MindustryServer {
     public MindustryServer get(){return this;}
 
     public void handle(String s) throws IOException {
-        if(s.startsWith("r ")){
-            System.out.println("["+name+"]  traced info about "+s.substring(2));
-            bw.write(storage.get(s.substring(2)).toJson()+"\n");
+        if (s.startsWith("r ")) {
+            System.out.println("[" + name + "]  traced info about " + s.substring(2));
+            bw.write("w " + storage.get(s.substring(2)).toJson() + "\n");
             bw.flush();
             return;
         }
-        if(s.startsWith("w ")){
+        if (s.startsWith("s ")) {
+            System.out.println("[" + name + "]  traced rating by " + s.substring(2));
+            bw.write("s " + new RatingInfo(s.substring(2)).toJson() + "\n");
+            bw.flush();
+            return;
+        }
+        if (s.startsWith("w ")) {
             PlayerInfo info = PlayerInfo.fromJson(s.substring(2));
-            System.out.println("["+name+"]  writed info about "+info.uuid);
+            System.out.println("[" + name + "]  writed info about " + info.uuid);
             storage.add(info);
             return;
         }
         //TODO remove save
-        if(s.equals("save")){
-            System.out.println("["+name+"]  request save");
+        if (s.equals("save")) {
+            System.out.println("[" + name + "]  request save");
             storage.save();
+        }
+    }
+
+    public void requestAllData() {
+        try {
+            bw.write("ar\n");
+            bw.flush();
+        } catch (Exception ignored) {
         }
     }
 }

@@ -15,15 +15,23 @@ public class PlayerInfo {
     public int totalWaves = 0;
     public long discordId = 0;
     public String nick = "";
+    public String loginName = "";
     public ArrayList<String> warnings = new ArrayList<>();
 
     public PlayerInfo(String uuid) {
         this.uuid = uuid;
     }
-    public static PlayerInfo fromJson(String json){
+
+    public static PlayerInfo fromJson(String json) {
         return gson.fromJson(json, PlayerInfo.class);
     }
-    public String toJson(){
+
+    public String toJson() {
         return gson.toJson(this);
+    }
+
+    public long getXp() {
+        long xp = (totalPlayedTime * 10) + (blocksPlaced * 3) - blocksDestroyed + (pvpWins * 10) + (hexedWins * 20) + (attackWins * 7) + (totalWaves * 2);
+        return xp;
     }
 }
